@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-
   // Footer year
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -45,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
   }
 
-  // Gallery — auto crossfade spotlight
+  // Gallery - auto crossfade spotlight
   var spotlight = document.getElementById('spotlight');
   if (spotlight) {
     var images = Array.from(spotlight.querySelectorAll('.spotlight-img'));
@@ -82,11 +81,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     spotlight.addEventListener('mouseenter', stopAutoplay);
     spotlight.addEventListener('mouseleave', startAutoplay);
-
     startAutoplay();
   }
 
-// Intake form -> Formspree AJAX submission with Green Tick
+  // Intake form -> Formspree AJAX submission with Green Tick
   var form = document.getElementById('intakeForm');
   var status = document.getElementById('formStatus');
   
@@ -99,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      // Change button text while sending
       var submitBtn = form.querySelector('button[type="submit"]');
       if (submitBtn) {
         submitBtn.disabled = true;
