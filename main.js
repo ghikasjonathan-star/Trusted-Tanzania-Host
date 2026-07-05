@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
     startAutoplay();
   }
 
-  // Intake form -> Formspree AJAX submission with Green Tick
+// Intake form -> Formspree AJAX submission with Green Tick
   var form = document.getElementById('intakeForm');
   var status = document.getElementById('formStatus');
   
@@ -101,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Change button text while sending
       var submitBtn = form.querySelector('button[type="submit"]');
-      var originalBtnText = submitBtn ? submitBtn.textContent : "Submit";
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = "Sending...";
@@ -117,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }).then(response => {
         if (response.ok) {
-          // Success! Clear the form fields
           form.reset();
           if (status) {
             status.innerHTML = '<span style="color: #2d5a27; font-weight: bold; font-size: 1.2rem;">✓ Briefing Submitted Successfully</span>';
@@ -127,18 +125,23 @@ document.addEventListener('DOMContentLoaded', function () {
             submitBtn.textContent = "Submitted";
           }
         } else {
-          response.json().then(data => {
-            if (Object.prototype.hasOwnProperty.call(data, 'errors')) {
-              status.textContent = data Bart.errors.map(error => error.message).join(", ");
-            } else {
-              status.textContent = "Oops! There was a problem submitting your form.";
-            }
-          });
+          if (status) {
+            status.textContent = "Oops! There was a problem submitting your form.";
+          }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Mission Briefing";
+          }
         }
       }).catch(error => {
         if (status) {
-          status.textContent = "Oops! There was a problem submitting your form.";
+          status.textContent = "Oops! There was a problem connecting to the server.";
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit Mission Briefing";
         }
       });
     });
   }
+});
