@@ -86,56 +86,59 @@ document.addEventListener('DOMContentLoaded', function () {
     startAutoplay();
   }
 
-  // Intake form -> mailto handoff
+  // Intake form -> Formspree AJAX submission with Green Tick
   var form = document.getElementById('intakeForm');
   var status = document.getElementById('formStatus');
+  
   if (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-
+      
       if (!form.checkValidity()) {
         form.reportValidity();
         return;
       }
 
-      var data = {
-        fullName: form.fullName.value.trim(),
-        email: form.email.value.trim(),
-        phone: form.phone.value.trim(),
-        clientType: form.clientType.value,
-        interest: form.interest.value,
-        entity: form.entity.value,
-        budget: form.budget.value,
-        timeline: form.timeline.value,
-        message: form.message.value.trim()
-      };
-
-      var subject = 'New Enquiry — Trusted Tanzania Host (' + data.interest + ')';
-      var bodyLines = [
-        'Name: ' + data.fullName,
-        'Email: ' + data.email,
-        'Phone/WhatsApp: ' + data.phone,
-        'Client Type: ' + data.clientType,
-        'Area of Interest: ' + data.interest,
-        'Local Entity Registered: ' + data.entity,
-        'Budget Range: ' + data.budget,
-        'Timeline: ' + data.timeline,
-        '',
-        'Mission Briefing:',
-        data.message
-      ];
-      var body = bodyLines.join('\n');
-
-      var mailto = 'mailto:info@ghikasadventures.com'
-        + '?subject=' + encodeURIComponent(subject)
-        + '&body=' + encodeURIComponent(body);
-
-      window.location.href = mailto;
-
-      if (status) {
-        status.textContent = 'Your email app should now be open with this briefing pre-filled. If nothing opened, message us directly on WhatsApp instead.';
-        status.classList.add('show');
+      // Change button text while sending
+      var submitBtn = form.querySelector('button[type="submit"]');
+      var originalBtnText = submitBtn ? submitBtn.textContent : "Submit";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending...";
       }
+
+      var data = new FormData(form);
+      
+      fetch(form.action, {
+        method: form.method,
+        body: data,
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).then(response => {
+        if (response.ok) {
+          // Success! Clear the form fields
+          form.reset();
+          if (status) {
+            status.innerHTML = '<span style="color: #2d5a27; font-weight: bold; font-size: 1.2rem;">✓ Briefing Submitted Successfully</span>';
+            status.classList.add('show');
+          }
+          if (submitBtn) {
+            submitBtn.textContent = "Submitted";
+          }
+        } else {
+          response.json().then(data => {
+            if (Object.prototype.hasOwnProperty.call(data, 'errors')) {
+              status.textContent = data Bart.errors.map(error => error.message).join(", ");
+            } else {
+              status.textContent = "Oops! There was a problem submitting your form.";
+            }
+          });
+        }
+      }).catch(error => {
+        if (status) {
+          status.textContent = "Oops! There was a problem submitting your form.";
+        }
+      });
     });
   }
-});
